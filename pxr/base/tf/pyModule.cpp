@@ -238,8 +238,7 @@ public:
                     /*max_args =*/ ~0
                     )
                 );
-            
-            ret.attr("__doc__") = fn.attr("__doc__");
+
         }
 
         return ret;
@@ -247,9 +246,13 @@ public:
 
     inline object ReplaceFunctionOnOwner(char const *name, object owner, object fn)
     {
+        object fnDocstring = fn.attr("__doc__");
         object newFn = DecorateForErrorHandling(name, owner, fn);
         PyObject_DelAttrString(owner.ptr(), name);
         objects::function::add_to_namespace(owner, name, newFn);
+        // Add to namespace overwrites the docstring if signatures
+        // are enabled, so we restore the docstring here
+        newFn.attr("__doc__") = fnDocstring;
         return newFn;
     }
     
@@ -433,9 +436,10 @@ void Tf_PyInitWrapModule(
     // wrapped.
     boost::python::scope().attr("__MFB_FULL_PACKAGE_NAME") = packageName;
 
-    // Disable docstring auto signatures.
+    // TODO: Drive these with a build var
     boost::python::docstring_options docOpts(true /*show user-defined*/,
-                                             false /*show signatures*/);
+                                             true /*show py signatures*/,
+                                             true /*show cpp signatures*/);
 
     // Do the wrapping.
     wrapModule();
