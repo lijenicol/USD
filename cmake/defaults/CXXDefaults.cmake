@@ -42,7 +42,7 @@ _add_define(GL_GLEXT_PROTOTYPES)
 _add_define(GLX_GLXEXT_PROTOTYPES)
 
 # Python bindings for tf require this define.
-_add_define(BOOST_PYTHON_NO_PY_SIGNATURES)
+# _add_define(BOOST_PYTHON_NO_PY_SIGNATURES)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     _add_define(BUILD_OPTLEVEL_DEV)
